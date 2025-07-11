@@ -33,16 +33,19 @@ pip install -e ".[dev]"
 
 ```python
 import itk
-from pyvista_itk import itk_image_to_pyvista_grid
+from pyvista_itk import itk_image_to_pyvista_grid, data
 
-# Load an ITK image
-image = itk.imread("path/to/image.nii.gz")
+# Download and load example brain MRI
+image = data.load_example_brain_mri()
+
+# Or load your own image
+# image = itk.imread("path/to/image.nii.gz")
 
 # Convert to PyVista
 grid = itk_image_to_pyvista_grid(image)
 
 # Visualize
-grid.plot(volume=True, cmap="bone")
+grid.plot(volume=True, cmap="gray")
 ```
 
 ### Convert PyVista to ITK Image
@@ -64,18 +67,32 @@ itk.imwrite(image, "output.nii.gz")
 
 ## Examples
 
-### Visualizing CT Data
+### Download Example Data
 
 ```python
-import itk
-import pyvista as pv
-from pyvista_itk import itk_image_to_pyvista_grid
+from pyvista_itk import data
 
-# Load DICOM series
-reader = itk.ImageSeriesReader.New()
-reader.SetFileNames(dicom_file_names)
-reader.Update()
-image = reader.GetOutput()
+# Download example datasets
+brain_mri = data.load_example_brain_mri()
+ct_chest = data.load_example_ct_chest()
+
+# Create synthetic images
+gradient = data.create_synthetic_image(pattern="gradient")
+sphere = data.create_synthetic_image(pattern="sphere")
+checkerboard = data.create_synthetic_image(pattern="checkerboard")
+
+# List available examples
+print(data.examples())
+```
+
+### Visualizing Medical Images
+
+```python
+import pyvista as pv
+from pyvista_itk import itk_image_to_pyvista_grid, data
+
+# Load example brain MRI
+image = data.load_example_brain_mri()
 
 # Convert and visualize
 grid = itk_image_to_pyvista_grid(image)
@@ -83,7 +100,7 @@ grid = itk_image_to_pyvista_grid(image)
 plotter = pv.Plotter()
 plotter.add_volume(
     grid,
-    cmap="bone",
+    cmap="gray",
     opacity="sigmoid",
     show_scalar_bar=True,
 )
@@ -93,8 +110,11 @@ plotter.show()
 ### Processing and Visualization Pipeline
 
 ```python
-# Load image with ITK
-image = itk.imread("brain_mri.nii.gz")
+import itk
+from pyvista_itk import itk_image_to_pyvista_grid, data
+
+# Create synthetic image
+image = data.create_synthetic_image(pattern="checkerboard")
 
 # Apply ITK filters
 smoothed = itk.smooth_recursive_gaussian_image_filter(image, sigma=2.0)
@@ -104,7 +124,7 @@ grid = itk_image_to_pyvista_grid(smoothed)
 
 # Visualize with custom settings
 plotter = pv.Plotter()
-plotter.add_volume(grid, cmap="gray", opacity="linear")
+plotter.add_volume(grid, cmap="viridis", opacity="linear")
 plotter.add_axes()
 plotter.show()
 ```
