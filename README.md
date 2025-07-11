@@ -1,0 +1,185 @@
+# PyVista-ITK
+
+[![Python Version](https://img.shields.io/pypi/pyversions/pyvista-itk.svg)](https://pypi.org/project/pyvista-itk/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+PyVista-ITK is a Python library that enables seamless interoperability between [PyVista](https://pyvista.org/) and [ITK (Insight Toolkit)](https://itk.org/). This library is designed for medical imaging applications, allowing you to leverage ITK's powerful image processing capabilities alongside PyVista's advanced 3D visualization features.
+
+## Features
+
+- Convert ITK images to PyVista UniformGrid for 3D visualization
+- Convert PyVista UniformGrid back to ITK images for further processing
+- Preserve spatial information (origin, spacing) during conversions
+- Support for medical imaging formats (DICOM, NIfTI, etc.)
+- Easy integration into existing medical imaging workflows
+
+## Installation
+
+```bash
+pip install pyvista-itk
+```
+
+### Development Installation
+
+```bash
+git clone https://github.com/yourusername/pyvista-itk.git
+cd pyvista-itk
+pip install -e ".[dev]"
+```
+
+## Quick Start
+
+### Convert ITK Image to PyVista
+
+```python
+import itk
+from pyvista_itk import itk_image_to_pyvista_grid, data
+
+# Download and load example brain MRI
+image = data.load_example_brain_mri()
+
+# Or load your own image
+# image = itk.imread("path/to/image.nii.gz")
+
+# Convert to PyVista
+grid = itk_image_to_pyvista_grid(image)
+
+# Visualize
+grid.plot(volume=True, cmap="gray")
+```
+
+### Convert PyVista to ITK Image
+
+```python
+import pyvista as pv
+from pyvista_itk import pyvista_grid_to_itk_image
+
+# Create a PyVista UniformGrid
+grid = pv.UniformGrid(dims=(100, 100, 100))
+grid["values"] = grid.points[:, 2]  # Z-coordinates as values
+
+# Convert to ITK
+image = pyvista_grid_to_itk_image(grid)
+
+# Save the image
+itk.imwrite(image, "output.nii.gz")
+```
+
+## Examples
+
+### Download Example Data
+
+```python
+from pyvista_itk import data
+
+# Download example datasets
+brain_mri = data.load_example_brain_mri()
+ct_chest = data.load_example_ct_chest()
+
+# Create synthetic images
+gradient = data.create_synthetic_image(pattern="gradient")
+sphere = data.create_synthetic_image(pattern="sphere")
+checkerboard = data.create_synthetic_image(pattern="checkerboard")
+
+# List available examples
+print(data.examples())
+```
+
+### Visualizing Medical Images
+
+```python
+import pyvista as pv
+from pyvista_itk import itk_image_to_pyvista_grid, data
+
+# Load example brain MRI
+image = data.load_example_brain_mri()
+
+# Convert and visualize
+grid = itk_image_to_pyvista_grid(image)
+
+plotter = pv.Plotter()
+plotter.add_volume(
+    grid,
+    cmap="gray",
+    opacity="sigmoid",
+    show_scalar_bar=True,
+)
+plotter.show()
+```
+
+### Processing and Visualization Pipeline
+
+```python
+import itk
+from pyvista_itk import itk_image_to_pyvista_grid, data
+
+# Create synthetic image
+image = data.create_synthetic_image(pattern="checkerboard")
+
+# Apply ITK filters
+smoothed = itk.smooth_recursive_gaussian_image_filter(image, sigma=2.0)
+
+# Convert to PyVista for visualization
+grid = itk_image_to_pyvista_grid(smoothed)
+
+# Visualize with custom settings
+plotter = pv.Plotter()
+plotter.add_volume(grid, cmap="viridis", opacity="linear")
+plotter.add_axes()
+plotter.show()
+```
+
+## Documentation
+
+For more detailed documentation and examples, please visit our [documentation page](https://pyvista-itk.readthedocs.io).
+
+## Contributing
+
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+
+### Development Setup
+
+1. Fork the repository
+2. Create a new branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes
+4. Run tests (`pytest`)
+5. Commit your changes (`git commit -m 'Add amazing feature'`)
+6. Push to the branch (`git push origin feature/amazing-feature`)
+7. Open a Pull Request
+
+## Testing
+
+Run the test suite:
+
+```bash
+pytest
+```
+
+With coverage:
+
+```bash
+pytest --cov=pyvista_itk
+```
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+- [PyVista](https://pyvista.org/) for 3D visualization
+- [ITK](https://itk.org/) for medical image processing
+- The medical imaging community for inspiration and support
+
+## Citation
+
+If you use PyVista-ITK in your research, please cite:
+
+```bibtex
+@software{pyvista-itk,
+  title = {PyVista-ITK: Seamless interoperability between PyVista and ITK},
+  author = {Your Name},
+  year = {2024},
+  url = {https://github.com/yourusername/pyvista-itk}
+}
+```
