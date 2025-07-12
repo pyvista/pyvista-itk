@@ -1,0 +1,13 @@
+LICENSE
+README.md
+pyproject.toml
+pyvista_itk/__init__.py
+pyvista_itk/data.py
+pyvista_itk/itk_to_pyvista.py
+pyvista_itk/pyvista_to_itk.py
+pyvista_itk.egg-info/PKG-INFO
+pyvista_itk.egg-info/SOURCES.txt
+pyvista_itk.egg-info/dependency_links.txt
+pyvista_itk.egg-info/requires.txt
+pyvista_itk.egg-info/top_level.txt
+tests/test_conversions.py
